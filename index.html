@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AWS IoT Website</title>
+  </head>
+  <body>
+    <h1>AWS IoT Website</h1>
+    <div>
+      <h2>Speed:</h2>
+      <ul id="receivedMessages"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aws-sdk"></script>
+    <script>
+      // Initialize the AWS SDK with your IAM user's access key and secret key
+
+      var awsConfiguration = {
+        poolId: "us-east-1_itxyxNJQW", // 'YourCognitoIdentityPoolId'
+        host: "a12acx88i5sf07-ats.iot.us-east-1.amazonaws.com", // 'YourAWSIoTEndpoint', e.g. 'prefix.iot.us-east-1.amazonaws.com'
+        region: "us-east-1", // 'YourAwsRegion', e.g. 'us-east-1'
+      };
+
+      var AWS = require("aws-sdk");
+      var AWSIoTData = require("aws-iot-device-sdk");
+
+      const IoT = new AWS.Iot();
+
+      // Initialize your IoT topic
+      const topic = "your-iot-topic"; // Replace with your IoT topic
+
+      IoT.subscribe({ topic: topic }, (err, data) => {
+        if (err) {
+          console.error("Error subscribing to topic:", err);
+        } else {
+          console.log("Subscribed to topic:", topic);
+        }
+      });
+
+      IoT.on("message", (topic, message) => {
+        console.log(`Received message on ${topic}: ${message}`);
+        const receivedMessages = document.getElementById("receivedMessages");
+        const listItem = document.createElement("li");
+        listItem.textContent = `Received on ${topic}: ${message}`;
+        receivedMessages.appendChild(listItem);
+      });
+    </script>
+  </body>
+</html>
